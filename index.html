@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Oxygen Tank Duration Calculator</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Oxygen Tank Duration Calculator</h1>
+        </header>
+
+        <div class="oxygen-type-selector">
+            <button class="type-btn active" data-type="gas">Gas Oxygen</button>
+            <button class="type-btn" data-type="liquid">Liquid Oxygen</button>
+        </div>
+
+        <!-- Minute Volume Calculator -->
+        <div class="minute-volume-calculator">
+            <button class="collapsible-header" onclick="toggleMinuteVolumeCalculator()">
+                <span>Minute Volume Calculator</span>
+                <span class="collapse-icon" id="mv-calc-icon">▼</span>
+            </button>
+            <div class="collapsible-content" id="mv-calc-content" style="display: none;">
+                <div class="form-group">
+                    <label for="respiratory-rate">Respiratory Rate (breaths/min)</label>
+                    <input type="number" id="respiratory-rate" min="0" step="0.1" placeholder="Enter respiratory rate">
+                </div>
+                <div class="form-group">
+                    <label for="tidal-volume">Tidal Volume (mL)</label>
+                    <input type="number" id="tidal-volume" min="0" step="1" placeholder="Enter tidal volume">
+                </div>
+                <button type="button" class="calculate-btn" onclick="calculateMinuteVolume()">Calculate Minute Volume</button>
+                <div id="mv-result" class="result-container" style="display: none;">
+                    <h3>Minute Volume</h3>
+                    <div class="result-value" id="mv-value"></div>
+                    <button type="button" class="use-value-btn" onclick="useCalculatedMinuteVolume()">Use This Value</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Gas Oxygen Form -->
+        <div id="gas-form" class="form-container active">
+            <div class="form-group">
+                <label for="tank-size">Tank Size</label>
+                <select id="tank-size" required>
+                    <option value="">Select tank size</option>
+                    <option value="D">D Cylinder</option>
+                    <option value="E">E Cylinder</option>
+                    <option value="M">M Cylinder</option>
+                    <option value="H">H/K/G Cylinder</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="conversion-factor">Conversion Factor (L/PSI)</label>
+                <input type="text" id="conversion-factor" readonly placeholder="Select tank size">
+            </div>
+
+            <div class="form-group">
+                <label for="psi">PSI (Pressure) <span class="label-note">(Enter your total PSI for all tanks of the selected size)</span></label>
+                <input type="number" id="psi" min="0" step="0.1" placeholder="Enter PSI" required>
+            </div>
+
+            <div class="form-group">
+                <label for="flow-rate">Flow Rate / Minute Ventilation (L/Min)</label>
+                <input type="number" id="flow-rate" min="0" step="0.1" placeholder="Enter flow rate" required>
+            </div>
+
+            <div class="form-group">
+                <label for="fio2">FiO2 (%)</label>
+                <input type="number" id="fio2" min="21" max="100" step="0.1" placeholder="Enter FiO2 percentage (e.g., 21 for 21%)" required>
+            </div>
+
+            <button type="button" class="calculate-btn" onclick="calculateGasOxygen()">Calculate Duration</button>
+
+            <div id="gas-result" class="result-container" style="display: none;">
+                <h3>Duration Remaining</h3>
+                <div class="result-value" id="gas-duration"></div>
+            </div>
+        </div>
+
+        <!-- Liquid Oxygen Form -->
+        <div id="liquid-form" class="form-container" style="display: none;">
+            <div class="form-group">
+                <label for="liters-remaining">Liters Remaining</label>
+                <input type="number" id="liters-remaining" min="0" step="0.1" placeholder="Enter liters remaining" required>
+            </div>
+
+            <div class="form-group">
+                <label for="liquid-flow-rate">Flow Rate / Minute Ventilation (L/Min)</label>
+                <input type="number" id="liquid-flow-rate" min="0" step="0.1" placeholder="Enter flow rate" required>
+            </div>
+
+            <div class="form-group">
+                <label for="liquid-fio2">FiO2 (%)</label>
+                <input type="number" id="liquid-fio2" min="21" max="100" step="0.1" placeholder="Enter FiO2 percentage (e.g., 21 for 21%)" required>
+            </div>
+
+            <button type="button" class="calculate-btn" onclick="calculateLiquidOxygen()">Calculate Duration</button>
+
+            <div id="liquid-result" class="result-container" style="display: none;">
+                <h3>Duration Remaining</h3>
+                <div class="result-value" id="liquid-duration"></div>
+            </div>
+        </div>
+
+        <!-- Transport Duration Calculator -->
+        <div class="transport-duration-section">
+            <div class="form-group">
+                <label for="transport-duration">Transport Duration (minutes)</label>
+                <input type="number" id="transport-duration" min="0" step="0.1" placeholder="Enter transport duration">
+            </div>
+            <div id="tanks-recommendation" class="tanks-recommendation-container" style="display: none;">
+                <h3>Recommended Number of Tanks</h3>
+                <div class="result-value" id="tanks-count"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
