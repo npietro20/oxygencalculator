@@ -3,7 +3,9 @@ const TANK_CONVERSION_FACTORS = {
     'D': 0.16,  // D cylinder: 0.16 L/PSI
     'E': 0.28,  // E cylinder: 0.28 L/PSI
     'M': 1.56,  // M cylinder: 1.56 L/PSI
-    'H': 3.14   // H cylinder: 3.14 L/PSI
+    'G': 2.41,  // G cylinder: 2.41 L/PSI
+    'H': 3.14,  // H/K cylinder: 3.14 L/PSI
+    'K': 3.14   // H/K cylinder: 3.14 L/PSI
 };
 
 // Konami code: Up, Up, Down, Down, Left, Right, Left, Right, B, A
@@ -13,12 +15,6 @@ const KONAMI_CODE = [
     'KeyB', 'KeyA'
 ];
 let konamiCodePosition = 0;
-
-// Swipe sequence for mobile: Up, Up, Down, Down, Left, Right, Left, Right
-const SWIPE_KONAMI_CODE = ['up', 'up', 'down', 'down', 'left', 'right', 'left', 'right'];
-let swipeKonamiCodePosition = 0;
-let touchStartX = 0;
-let touchStartY = 0;
 
 // Initialize event listeners
 document.addEventListener('DOMContentLoaded', function() {
@@ -63,63 +59,6 @@ document.addEventListener('DOMContentLoaded', function() {
             konamiCodePosition = 0;
         }
     });
-
-    // Konami code detection (swipe gestures for mobile)
-    document.addEventListener('touchstart', function(event) {
-        touchStartX = event.touches[0].clientX;
-        touchStartY = event.touches[0].clientY;
-    }, { passive: true });
-
-    document.addEventListener('touchend', function(event) {
-        if (!touchStartX || !touchStartY) return;
-
-        const touchEndX = event.changedTouches[0].clientX;
-        const touchEndY = event.changedTouches[0].clientY;
-        
-        const deltaX = touchEndX - touchStartX;
-        const deltaY = touchEndY - touchStartY;
-        
-        // Determine swipe direction
-        const absX = Math.abs(deltaX);
-        const absY = Math.abs(deltaY);
-        
-        // Minimum swipe distance (in pixels) to register as a swipe
-        const minSwipeDistance = 30;
-        
-        if (absX < minSwipeDistance && absY < minSwipeDistance) {
-            // Too small to be a swipe, reset
-            touchStartX = 0;
-            touchStartY = 0;
-            return;
-        }
-        
-        let swipeDirection = '';
-        
-        if (absX > absY) {
-            // Horizontal swipe
-            swipeDirection = deltaX > 0 ? 'right' : 'left';
-        } else {
-            // Vertical swipe
-            swipeDirection = deltaY > 0 ? 'down' : 'up';
-        }
-        
-        // Check if swipe matches the next in sequence
-        if (swipeDirection === SWIPE_KONAMI_CODE[swipeKonamiCodePosition]) {
-            swipeKonamiCodePosition++;
-            // If we've completed the sequence
-            if (swipeKonamiCodePosition === SWIPE_KONAMI_CODE.length) {
-                activateKonamiCode();
-                swipeKonamiCodePosition = 0; // Reset for next time
-            }
-        } else {
-            // Reset if wrong swipe direction
-            swipeKonamiCodePosition = 0;
-        }
-        
-        // Reset touch positions
-        touchStartX = 0;
-        touchStartY = 0;
-    }, { passive: true });
 
 });
 
