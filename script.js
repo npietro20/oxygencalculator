@@ -6,6 +6,20 @@ const TANK_CONVERSION_FACTORS = {
     'H': 3.14   // H cylinder: 3.14 L/PSI
 };
 
+// Konami code: Up, Up, Down, Down, Left, Right, Left, Right, B, A
+const KONAMI_CODE = [
+    'ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown',
+    'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight',
+    'KeyB', 'KeyA'
+];
+let konamiCodePosition = 0;
+
+// Swipe sequence for mobile: Up, Up, Down, Down, Left, Right, Left, Right
+const SWIPE_KONAMI_CODE = ['up', 'up', 'down', 'down', 'left', 'right', 'left', 'right'];
+let swipeKonamiCodePosition = 0;
+let touchStartX = 0;
+let touchStartY = 0;
+
 // Initialize event listeners
 document.addEventListener('DOMContentLoaded', function() {
     // Oxygen type selector
@@ -33,6 +47,79 @@ document.addEventListener('DOMContentLoaded', function() {
     transportDurationInput.addEventListener('input', function() {
         calculateRecommendedTanks();
     });
+
+    // Konami code detection (keyboard)
+    document.addEventListener('keydown', function(event) {
+        // Check if the pressed key matches the next key in the sequence
+        if (event.code === KONAMI_CODE[konamiCodePosition]) {
+            konamiCodePosition++;
+            // If we've completed the sequence
+            if (konamiCodePosition === KONAMI_CODE.length) {
+                activateKonamiCode();
+                konamiCodePosition = 0; // Reset for next time
+            }
+        } else {
+            // Reset if wrong key is pressed
+            konamiCodePosition = 0;
+        }
+    });
+
+    // Konami code detection (swipe gestures for mobile)
+    document.addEventListener('touchstart', function(event) {
+        touchStartX = event.touches[0].clientX;
+        touchStartY = event.touches[0].clientY;
+    }, { passive: true });
+
+    document.addEventListener('touchend', function(event) {
+        if (!touchStartX || !touchStartY) return;
+
+        const touchEndX = event.changedTouches[0].clientX;
+        const touchEndY = event.changedTouches[0].clientY;
+        
+        const deltaX = touchEndX - touchStartX;
+        const deltaY = touchEndY - touchStartY;
+        
+        // Determine swipe direction
+        const absX = Math.abs(deltaX);
+        const absY = Math.abs(deltaY);
+        
+        // Minimum swipe distance (in pixels) to register as a swipe
+        const minSwipeDistance = 30;
+        
+        if (absX < minSwipeDistance && absY < minSwipeDistance) {
+            // Too small to be a swipe, reset
+            touchStartX = 0;
+            touchStartY = 0;
+            return;
+        }
+        
+        let swipeDirection = '';
+        
+        if (absX > absY) {
+            // Horizontal swipe
+            swipeDirection = deltaX > 0 ? 'right' : 'left';
+        } else {
+            // Vertical swipe
+            swipeDirection = deltaY > 0 ? 'down' : 'up';
+        }
+        
+        // Check if swipe matches the next in sequence
+        if (swipeDirection === SWIPE_KONAMI_CODE[swipeKonamiCodePosition]) {
+            swipeKonamiCodePosition++;
+            // If we've completed the sequence
+            if (swipeKonamiCodePosition === SWIPE_KONAMI_CODE.length) {
+                activateKonamiCode();
+                swipeKonamiCodePosition = 0; // Reset for next time
+            }
+        } else {
+            // Reset if wrong swipe direction
+            swipeKonamiCodePosition = 0;
+        }
+        
+        // Reset touch positions
+        touchStartX = 0;
+        touchStartY = 0;
+    }, { passive: true });
 
 });
 
@@ -94,8 +181,8 @@ function calculateGasOxygen() {
         return;
     }
 
-    if (!flowRate || flowRate <= 0 || !Number.isInteger(flowRate)) {
-        alert('Please enter a valid whole number flow rate');
+    if (!flowRate || flowRate <= 0) {
+        alert('Please enter a valid flow rate');
         return;
     }
 
@@ -128,8 +215,8 @@ function calculateLiquidOxygen() {
         return;
     }
 
-    if (!flowRate || flowRate <= 0 || !Number.isInteger(flowRate)) {
-        alert('Please enter a valid whole number flow rate');
+    if (!flowRate || flowRate <= 0) {
+        alert('Please enter a valid flow rate');
         return;
     }
 
@@ -286,4 +373,70 @@ function calculateRecommendedTanks() {
     // Display result
     tanksCountElement.textContent = recommendedTanks + (recommendedTanks === 1 ? ' tank' : ' tanks');
     recommendationContainer.style.display = 'block';
+}
+
+function activateKonamiCode() {
+    // Create a fun celebration effect
+    const body = document.body;
+    
+    // Add rainbow animation
+    body.style.animation = 'rainbow 2s ease-in-out';
+    
+    // Create confetti effect
+    for (let i = 0; i < 50; i++) {
+        createConfetti();
+    }
+    
+    // Show the University of Critical Care Paramedic Florida logo
+    const logoContainer = document.createElement('div');
+    logoContainer.style.cssText = `
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 10000;
+        animation: fadeInOut 4s ease-in-out;
+        pointer-events: none;
+    `;
+    
+    // Display the logo image
+    const logoImg = document.createElement('img');
+    logoImg.src = 'uf-ccp-logo.jpg';
+    logoImg.alt = 'University of Critical Care Paramedic Florida';
+    logoImg.style.cssText = `
+        width: 400px;
+        height: 400px;
+        background: #FFFFFF;
+        max-width: 90vw;
+        max-height: 90vh;
+        object-fit: contain;
+    `;
+    
+    logoContainer.appendChild(logoImg);
+    document.body.appendChild(logoContainer);
+    
+    // Remove logo after animation
+    setTimeout(() => {
+        logoContainer.remove();
+        body.style.animation = '';
+    }, 4000);
+}
+
+function createConfetti() {
+    const confetti = document.createElement('div');
+    const colors = ['#0021A5', '#FA4616', '#FFD700', '#00FF00', '#FF00FF'];
+    confetti.style.cssText = `
+        position: fixed;
+        width: 10px;
+        height: 10px;
+        background: ${colors[Math.floor(Math.random() * colors.length)]};
+        left: ${Math.random() * 100}vw;
+        top: -10px;
+        z-index: 9999;
+        pointer-events: none;
+        animation: confettiFall ${2 + Math.random() * 3}s linear forwards;
+    `;
+    document.body.appendChild(confetti);
+    
+    setTimeout(() => confetti.remove(), 5000);
 }

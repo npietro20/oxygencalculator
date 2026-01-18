@@ -9,7 +9,7 @@
 <body>
     <div class="container">
         <header>
-            <h1>Oxygen Tank Duration Calculator</h1>
+            <h1>Transport Oxygen Estimation Tool</h1>
         </header>
 
         <div class="oxygen-type-selector">
@@ -25,12 +25,12 @@
             </button>
             <div class="collapsible-content" id="mv-calc-content" style="display: none;">
                 <div class="form-group">
-                    <label for="respiratory-rate">Respiratory Rate (breaths/min)</label>
-                    <input type="number" id="respiratory-rate" min="0" step="1" placeholder="Enter respiratory rate">
+                    <label for="respiratory-rate">Respiratory Rate)</label>
+                    <input type="number" id="respiratory-rate" min="0" step="1" placeholder="Breaths per minute">
                 </div>
                 <div class="form-group">
-                    <label for="tidal-volume">Tidal Volume (mL)</label>
-                    <input type="number" id="tidal-volume" min="0" step="1" placeholder="Enter tidal volume">
+                    <label for="tidal-volume">Tidal Volume</label>
+                    <input type="number" id="tidal-volume" min="0" step="1" placeholder="mL">
                 </div>
                 <button type="button" class="calculate-btn" onclick="calculateMinuteVolume()">Calculate Minute Volume</button>
                 <div id="mv-result" class="result-container" style="display: none;">
@@ -60,7 +60,7 @@
             </div>
 
             <div class="form-group">
-                <label for="psi">PSI (Pressure) <span class="label-note">(Enter your total PSI for all tanks of the selected size)</span></label>
+                <label for="psi">PSI (Total) <span class="label-note">(Enter the total PSI for all tanks of the selected size)</span></label>
                 <input type="number" id="psi" min="0" step="1" placeholder="Enter PSI" required>
             </div>
 
@@ -73,7 +73,7 @@
                 <div class="collapsible-content" id="safety-residual-content" style="display: none;">
                     <div class="form-group">
                         <label for="safety-residual">Safety Residual PSI</label>
-                        <p class="label-note">(Include residual PSI to be subtracted from total as a safety margin, typically 200-500 PSI PER tank)</p>
+                        <p class="label-note">(Include residual PSI to be subtracted from total PSI as a safety margin, typically 200-500psi PER tank)</p>
                         <input type="number" id="safety-residual" min="0" step="1" placeholder="0 PSI">
                     </div>
                 </div>
@@ -81,7 +81,7 @@
 
             <div class="form-group">
                 <label for="flow-rate">Flow Rate / Minute Ventilation (L/Min)</label>
-                <input type="number" id="flow-rate" min="0" step="1" placeholder="Enter flow rate" required>
+                <input type="number" id="flow-rate" min="0" step="0.01" placeholder="Enter flow rate" required>
             </div>
 
             <div class="form-group">
@@ -106,7 +106,7 @@
 
             <div class="form-group">
                 <label for="liquid-flow-rate">Flow Rate / Minute Ventilation (L/Min)</label>
-                <input type="number" id="liquid-flow-rate" min="0" step="1" placeholder="Enter flow rate" required>
+                <input type="number" id="liquid-flow-rate" min="0" step="0.01" placeholder="Enter flow rate" required>
             </div>
 
             <div class="form-group">
@@ -126,13 +126,20 @@
         <div class="transport-duration-section">
             <div class="form-group">
                 <label for="transport-duration">Transport Duration (minutes)</label>
-                <input type="number" id="transport-duration" min="0" step="1" placeholder="Enter transport duration">
+                <input type="number" id="transport-duration" min="0" step="1" placeholder="Minutes">
             </div>
             <div id="tanks-recommendation" class="tanks-recommendation-container" style="display: none;">
                 <h3>Recommended Number of Tanks</h3>
                 <div class="result-value" id="tanks-count"></div>
             </div>
         </div>
+        <div class="disclaimer center">
+            <p>Disclaimer: This tool provides an estimate for informational purposes only. All durations are approximate and may vary based on temperature, maintenance, and other factors. These estimates do not account for ventilator bias flow or air leaks which varies based on model and patient factors.</p>
+        </div>
+    </div>
+
+    <div class="copyright">
+        <p>Calculator developed by William Alton, built by Nick Pietro.</p>
     </div>
 
     <script src="script.js"></script>
