@@ -69,6 +69,7 @@ function switchOxygenType(type) {
 function calculateGasOxygen() {
     const tankSize = document.getElementById('tank-size').value;
     const psi = parseFloat(document.getElementById('psi').value);
+    const safetyResidual = parseFloat(document.getElementById('safety-residual').value) || 0;
     const flowRate = parseFloat(document.getElementById('flow-rate').value);
     const fio2 = parseFloat(document.getElementById('fio2').value);
 
@@ -78,27 +79,38 @@ function calculateGasOxygen() {
         return;
     }
 
-    if (!psi || psi <= 0) {
-        alert('Please enter a valid PSI value');
+    if (!psi || psi <= 0 || !Number.isInteger(psi)) {
+        alert('Please enter a valid whole number PSI value');
         return;
     }
 
-    if (!flowRate || flowRate <= 0) {
-        alert('Please enter a valid flow rate');
+    if (safetyResidual < 0 || (safetyResidual > 0 && !Number.isInteger(safetyResidual))) {
+        alert('Safety residual must be a whole number and cannot be negative');
         return;
     }
 
-    if (!fio2 || fio2 < 21 || fio2 > 100) {
-        alert('Please enter a valid FiO2 percentage (between 21% and 100%)');
+    if (safetyResidual >= psi) {
+        alert('Safety residual cannot be greater than or equal to total PSI');
+        return;
+    }
+
+    if (!flowRate || flowRate <= 0 || !Number.isInteger(flowRate)) {
+        alert('Please enter a valid whole number flow rate');
+        return;
+    }
+
+    if (!fio2 || fio2 < 21 || fio2 > 100 || !Number.isInteger(fio2)) {
+        alert('Please enter a valid whole number FiO2 percentage (between 21% and 100%)');
         return;
     }
 
     // Convert FiO2 percentage to decimal (e.g., 21% -> 0.21)
     const fio2Decimal = fio2 / 100;
 
-    // Calculate duration: (conversion factor * PSI) / (Flow * FiO2)
+    // Calculate duration: (conversion factor * (PSI - Safety Residual)) / (Flow * FiO2)
     const conversionFactor = TANK_CONVERSION_FACTORS[tankSize];
-    const totalLiters = conversionFactor * psi;
+    const usablePSI = psi - safetyResidual;
+    const totalLiters = conversionFactor * usablePSI;
     const durationMinutes = totalLiters / (flowRate * fio2Decimal);
 
     // Display result
@@ -111,18 +123,18 @@ function calculateLiquidOxygen() {
     const fio2 = parseFloat(document.getElementById('liquid-fio2').value);
 
     // Validation
-    if (!litersRemaining || litersRemaining <= 0) {
-        alert('Please enter a valid liters remaining value');
+    if (!litersRemaining || litersRemaining <= 0 || !Number.isInteger(litersRemaining)) {
+        alert('Please enter a valid whole number liters remaining value');
         return;
     }
 
-    if (!flowRate || flowRate <= 0) {
-        alert('Please enter a valid flow rate');
+    if (!flowRate || flowRate <= 0 || !Number.isInteger(flowRate)) {
+        alert('Please enter a valid whole number flow rate');
         return;
     }
 
-    if (!fio2 || fio2 < 21 || fio2 > 100) {
-        alert('Please enter a valid FiO2 percentage (between 21% and 100%)');
+    if (!fio2 || fio2 < 21 || fio2 > 100 || !Number.isInteger(fio2)) {
+        alert('Please enter a valid whole number FiO2 percentage (between 21% and 100%)');
         return;
     }
 
@@ -195,18 +207,31 @@ function toggleMinuteVolumeCalculator() {
     }
 }
 
+function toggleSafetyResidual() {
+    const content = document.getElementById('safety-residual-content');
+    const icon = document.getElementById('safety-residual-icon');
+    
+    if (content.style.display === 'none') {
+        content.style.display = 'block';
+        icon.textContent = '▲';
+    } else {
+        content.style.display = 'none';
+        icon.textContent = '▼';
+    }
+}
+
 function calculateMinuteVolume() {
     const respiratoryRate = parseFloat(document.getElementById('respiratory-rate').value);
     const tidalVolume = parseFloat(document.getElementById('tidal-volume').value);
 
     // Validation
-    if (!respiratoryRate || respiratoryRate <= 0) {
-        alert('Please enter a valid respiratory rate');
+    if (!respiratoryRate || respiratoryRate <= 0 || !Number.isInteger(respiratoryRate)) {
+        alert('Please enter a valid whole number respiratory rate');
         return;
     }
 
-    if (!tidalVolume || tidalVolume <= 0) {
-        alert('Please enter a valid tidal volume');
+    if (!tidalVolume || tidalVolume <= 0 || !Number.isInteger(tidalVolume)) {
+        alert('Please enter a valid whole number tidal volume');
         return;
     }
 
@@ -250,7 +275,7 @@ function calculateRecommendedTanks() {
     const tanksCountElement = document.getElementById('tanks-count');
     
     // Only calculate if both values are available
-    if (!transportDuration || transportDuration <= 0 || !tankDuration || tankDuration <= 0) {
+    if (!transportDuration || transportDuration <= 0 || !Number.isInteger(transportDuration) || !tankDuration || tankDuration <= 0) {
         recommendationContainer.style.display = 'none';
         return;
     }
