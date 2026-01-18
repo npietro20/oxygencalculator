@@ -300,6 +300,14 @@ input[readonly] {
     margin: 0;
 }
 
+/* PWA safe area for mobile devices */
+@supports (padding: max(0px)) {
+    body {
+        padding-left: max(12px, env(safe-area-inset-left));
+        padding-right: max(12px, env(safe-area-inset-right));
+    }
+}
+
 @media (max-width: 600px) {
     body {
         padding: 0;
@@ -314,6 +322,10 @@ input[readonly] {
 
     h1 {
         font-size: 1.5rem;
+    }
+
+    .h1-break {
+        display: block;
     }
 
     .result-value {
